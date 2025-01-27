@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Filament\Resources\UserResource\RelationManagers;
-use App\Models\User;
+use App\Filament\Resources\SkinResource\Pages;
+use App\Filament\Resources\SkinResource\RelationManagers;
+use App\Models\Skin;
+use App\Models\Menu; // Import the Menu model
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -14,11 +15,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class UserResource extends Resource
+class SkinResource extends Resource
 {
-    protected static ?string $model = User::class;
-    protected static ?string $navigationGroup = 'User Management';
-    protected static ?string $navigationIcon = 'fas-user-edit';
+    protected static ?string $model = Skin::class;
+    protected static ?string $navigationGroup = 'Product Management';
+    protected static ?string $navigationIcon = 'bxs-category-alt';
 
     public static function form(Form $form): Form
     {
@@ -27,19 +28,14 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                Forms\Components\Select::make('menu_id') // Change to Select input
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->nullable()
-                    ->maxLength(255)
-                    ->dehydrateStateUsing(function ($state, $record) {
-                        // If no new password is provided, use the existing password
-                        return $state ? bcrypt($state) : $record->password;
-                    }),
+                    ->relationship('menu', 'name') // Fetch available menus
+                    ->label('Menu'),
+                Forms\Components\TextInput::make('price')
+                    ->required()
+                    ->numeric()
+                    ->prefix('Rp.'),
             ]);
     }
 
@@ -49,10 +45,10 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('menu.name') // Display the menu name
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('price')
+                    ->money('Rp.')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -110,10 +106,10 @@ class UserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListSkins::route('/'),
+            'create' => Pages\CreateSkin::route('/create'),
+            'view' => Pages\ViewSkin::route('/{record}'),
+            'edit' => Pages\EditSkin::route('/{record}/edit'),
         ];
     }
 }
