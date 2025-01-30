@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
+    public static ?int $navigationSort = 10;
     protected static ?string $navigationGroup = 'User Management';
     protected static ?string $navigationIcon = 'fas-user-edit';
 

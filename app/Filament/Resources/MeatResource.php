@@ -2,10 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SkinResource\Pages;
-use App\Filament\Resources\SkinResource\RelationManagers;
-use App\Models\Skin;
-use App\Models\Menu; // Import the Menu model
+use App\Filament\Resources\MeatResource\Pages;
+use App\Filament\Resources\MeatResource\RelationManagers;
+use App\Models\Meat;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,12 +14,12 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class SkinResource extends Resource
+class MeatResource extends Resource
 {
-    protected static ?string $model = Skin::class;
-    public static ?int $navigationSort = 2;
+    protected static ?string $model = Meat::class;
+    public static ?int $navigationSort = 3;
     protected static ?string $navigationGroup = 'Product Management';
-    protected static ?string $navigationIcon = 'bxs-category-alt';
+    protected static ?string $navigationIcon = 'tabler-meat';
 
     public static function form(Form $form): Form
     {
@@ -29,10 +28,6 @@ class SkinResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('menu_id') // Change to Select input
-                    ->required()
-                    ->relationship('menu', 'name') // Fetch available menus
-                    ->label('Menu'),
                 Forms\Components\TextInput::make('price')
                     ->required()
                     ->numeric()
@@ -46,8 +41,6 @@ class SkinResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('menu.name') // Display the menu name
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('price')
                     ->money('Rp.')
                     ->sortable(),
@@ -107,10 +100,10 @@ class SkinResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListSkins::route('/'),
-            'create' => Pages\CreateSkin::route('/create'),
-            'view' => Pages\ViewSkin::route('/{record}'),
-            'edit' => Pages\EditSkin::route('/{record}/edit'),
+            'index' => Pages\ListMeats::route('/'),
+            'create' => Pages\CreateMeat::route('/create'),
+            'view' => Pages\ViewMeat::route('/{record}'),
+            'edit' => Pages\EditMeat::route('/{record}/edit'),
         ];
     }
 }
