@@ -79,7 +79,6 @@ class ExtraResource extends Resource
         return [
             'index' => Pages\ListExtras::route('/'),
             'create' => Pages\CreateExtra::route('/create'),
-            'view' => Pages\ViewExtra::route('/{record}'),
             'edit' => Pages\EditExtra::route('/{record}/edit'),
         ];
     }

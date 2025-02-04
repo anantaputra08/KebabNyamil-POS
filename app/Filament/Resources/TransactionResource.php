@@ -36,20 +36,13 @@ class TransactionResource extends Resource
 
                 Forms\Components\Select::make('status')
                     ->label('Status')
+                    ->default('pending')
                     ->options([
                         'pending' => 'Pending',
                         'completed' => 'Completed',
                         'cancelled' => 'Cancelled',
                     ])
-                    ->required(),
-
-                Forms\Components\Select::make('payment_type')
-                    ->label('Payment Type')
-                    ->options([
-                        'cash' => 'Cash',
-                        'credit_card' => 'Credit Card',
-                        'bank_transfer' => 'Bank Transfer',
-                    ])
+                    ->dehydrated()
                     ->required(),
 
                 Forms\Components\Repeater::make('items')
@@ -113,11 +106,19 @@ class TransactionResource extends Resource
                                 self::updateTotalPrice($set, $get) // Tambahkan di sini
                             ),
                     ])
-                    // ->columns(2)
                     ->afterStateUpdated(
                         fn($state, callable $set, callable $get) =>
                         self::updateTotalPrice($set, $get)
                     ),
+
+                Forms\Components\Select::make('payment_type')
+                    ->label('Payment Type')
+                    ->options([
+                        'cash' => 'Cash',
+                        'credit_card' => 'Credit Card',
+                        'bank_transfer' => 'Bank Transfer',
+                    ])
+                    ->required(),
 
                 Forms\Components\TextInput::make('gross_amount')
                     ->label('Gross Amount')
@@ -160,8 +161,8 @@ class TransactionResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('id')
-                    ->sortable(),
+                // Tables\Columns\TextColumn::make('id')
+                //     ->sortable(),
                 Tables\Columns\TextColumn::make('order_id')
                     ->label('Order ID')
                     ->sortable(),
@@ -175,6 +176,12 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->sortable()
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'cancelled' => 'Cancelled',
+                        default => ucfirst($state),
+                    })
                     ->color(function ($state) {
                         return match ($state) {
                             'pending' => 'warning', // Warna kuning untuk pending
@@ -183,17 +190,23 @@ class TransactionResource extends Resource
                             default => 'gray', // Warna default jika tidak ada yang cocok
                         };
                     })
-                    ->badge(function ($state) {
-                        return match ($state) {
-                            'pending' => 'Pending',
-                            'completed' => 'Completed',
-                            'cancelled' => 'Cancelled',
-                            default => $state,
-                        };
-                    }),
+                    ->badge(),
                 Tables\Columns\TextColumn::make('payment_type')
                     ->label('Payment Type')
-                    ->sortable(),
+                    ->sortable()
+                    ->formatStateUsing(fn($state) => match ($state) {
+                        'cash' => 'Cash',
+                        'credit_card' => 'Credit Card',
+                        'bank_transfer' => 'Bank Transfer',
+                        default => ucfirst($state),
+                    })
+                    ->color(fn($state) => match ($state) {
+                        'cash' => 'success', // Hijau untuk Cash
+                        'credit_card' => 'primary', // Biru untuk Credit Card
+                        'bank_transfer' => 'info', // Kuning untuk Bank Transfer
+                        default => 'gray',
+                    })
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -203,8 +216,16 @@ class TransactionResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('created_at', 'desc')
             ->filters([])
             ->actions([
+                Tables\Actions\Action::make('markAsCompleted')
+                    ->label('Mark as Completed')
+                    ->icon('heroicon-o-check-circle')
+                    ->requiresConfirmation()
+                    ->color('success')
+                    ->visible(fn($record) => $record->status === 'pending') // Tampilkan hanya jika status pending
+                    ->action(fn($record) => $record->update(['status' => 'completed'])),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),

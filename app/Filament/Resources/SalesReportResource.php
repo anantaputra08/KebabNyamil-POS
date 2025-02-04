@@ -19,8 +19,7 @@ class SalesReportResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-chart-bar';
     protected static ?string $navigationLabel = 'Sales Report';
     protected static ?string $navigationGroup = 'Sales Management';
-    protected static ?string $modelLabel = 'Sales Report';
-    protected static ?string $pluralModelLabel = 'Sales Reports';
+    public static ?int $navigationSort = 2;
 
     public static function table(Table $table): Table
     {

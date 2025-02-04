@@ -72,7 +72,6 @@ class SpicyLevelResource extends Resource
         return [
             'index' => Pages\ListSpicyLevels::route('/'),
             'create' => Pages\CreateSpicyLevel::route('/create'),
-            'view' => Pages\ViewSpicyLevel::route('/{record}'),
             'edit' => Pages\EditSpicyLevel::route('/{record}/edit'),
         ];
     }

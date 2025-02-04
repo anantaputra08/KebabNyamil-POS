@@ -109,7 +109,6 @@ class SkinResource extends Resource
         return [
             'index' => Pages\ListSkins::route('/'),
             'create' => Pages\CreateSkin::route('/create'),
-            'view' => Pages\ViewSkin::route('/{record}'),
             'edit' => Pages\EditSkin::route('/{record}/edit'),
         ];
     }

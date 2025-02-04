@@ -102,7 +102,6 @@ class MeatResource extends Resource
         return [
             'index' => Pages\ListMeats::route('/'),
             'create' => Pages\CreateMeat::route('/create'),
-            'view' => Pages\ViewMeat::route('/{record}'),
             'edit' => Pages\EditMeat::route('/{record}/edit'),
         ];
     }
