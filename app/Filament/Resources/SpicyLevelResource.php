@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class SpicyLevelResource extends Resource
 {
     protected static ?string $model = SpicyLevel::class;
-
     public static ?int $navigationSort = 4;
     protected static ?string $navigationGroup = 'Product Management';
     protected static ?string $navigationIcon = 'bxs-hot';

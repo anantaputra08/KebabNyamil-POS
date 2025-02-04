@@ -10,4 +10,9 @@ class Menu extends Model
     use HasFactory;
     protected $fillable = ['name', 'price'];
 
+    public function skins()
+    {
+        return $this->hasMany(Skin::class);
+    }
+
 }
